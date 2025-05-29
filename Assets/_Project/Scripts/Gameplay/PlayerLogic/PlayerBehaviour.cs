@@ -9,7 +9,7 @@ namespace Assets._Project.Scripts.Gameplay.PlayerLogic
     {
         [SerializeField] private DefaultTankMovement _movement;
 
-        private IControlHandler _controllHandler;
+        private IControlDataGetter<MoveOnlyTankControlData> _controlDataGetter;
 
         private void Start()
         {
@@ -20,12 +20,19 @@ namespace Assets._Project.Scripts.Gameplay.PlayerLogic
         {
             _movement.Init();
 
-            _controllHandler = new PlayerTankControlHandler(new PlayerGameInput(), _movement);
+            _controlDataGetter = new PlayerGameInput();
         }
 
         private void FixedUpdate()
         {
-            _controllHandler.Handle();
+            HandleControl();
+        }
+
+        private void HandleControl()
+        {
+            var controlData = _controlDataGetter.GetControlData();
+
+            _movement.Move(controlData.MoveData);
         }
     }
 }
