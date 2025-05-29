@@ -1,0 +1,26 @@
+using Assets._Project.Scripts.Gameplay.TanksLogic.Control;
+using Assets._Project.Scripts.Gameplay.TanksLogic.Movement;
+using UnityEngine;
+
+namespace Assets._Project.Scripts.Gameplay.GameInput
+{
+    public class PlayerGameInput : IControlDataGetter<MoveOnlyTankControlData>
+    {
+        private MoveOnlyTankControlData _currentControlData = new MoveOnlyTankControlData();
+
+        public MoveOnlyTankControlData GetControlData()
+        {
+            float move = 0f;
+            if (Input.GetKey(KeyCode.W)) move = 1f;
+            else if (Input.GetKey(KeyCode.S)) move = -1f;
+
+            float rotate = 0f;
+            if (Input.GetKey(KeyCode.A)) rotate = -1f;
+            else if (Input.GetKey(KeyCode.D)) rotate = 1f;
+
+            _currentControlData.MoveData = new DefaultMoveData() { Move = move, Rotation = rotate };
+
+            return _currentControlData;
+        }
+    }
+}
