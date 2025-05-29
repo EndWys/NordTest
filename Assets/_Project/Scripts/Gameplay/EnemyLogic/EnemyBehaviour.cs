@@ -8,9 +8,9 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
     {
         [SerializeField] private DefaultTankMovement _movement;
 
-        private EnemyAIControl _aiControl;
-
         private IControlDataGetter<MoveOnlyTankControlData> _controlDataGetter;
+
+        private ITurnInPlace _turn;
 
         private void Start()
         {
@@ -20,8 +20,11 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
         public void Init()
         {
             _movement.Init();
-            _aiControl = new EnemyAIControl();
-            _controlDataGetter = _aiControl;
+
+            var aiController = new EnemyAIControl();
+
+            _turn = aiController;
+            _controlDataGetter = aiController;
         }
 
         private void FixedUpdate()
@@ -34,6 +37,11 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
             var controlData = _controlDataGetter.GetControlData();
 
             _movement.Move(controlData.MoveData);
+        }
+
+        private void OnCollisionEnter2D(Collision2D collision)
+        {
+            _turn.ForceTurnInPlace();
         }
     }
 }

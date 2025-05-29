@@ -6,4 +6,10 @@ namespace Assets._Project.Scripts.Gameplay.TanksLogic.Control
     {
         public DefaultMoveData MoveData;
     }
+
+    public struct ShootingTankControlData : IControllData
+    {
+        public DefaultMoveData MoveData;
+        //public DefaultShootingData ShootData;
+    }
 }

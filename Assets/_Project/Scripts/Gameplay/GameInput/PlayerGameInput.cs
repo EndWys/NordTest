@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace Assets._Project.Scripts.Gameplay.GameInput
 {
-    public class PlayerGameInput : IControlDataGetter<MoveOnlyTankControlData>
+    public class PlayerGameInput : IControlDataGetter<ShootingTankControlData>
     {
-        private MoveOnlyTankControlData _currentControlData = new MoveOnlyTankControlData();
+        private ShootingTankControlData _currentControlData = new ShootingTankControlData();
 
-        public MoveOnlyTankControlData GetControlData()
+        public ShootingTankControlData GetControlData()
         {
             float move = 0f;
             if (Input.GetKey(KeyCode.W)) move = 1f;
@@ -19,6 +19,8 @@ namespace Assets._Project.Scripts.Gameplay.GameInput
             else if (Input.GetKey(KeyCode.D)) rotate = 1f;
 
             _currentControlData.MoveData = new DefaultMoveData() { Move = move, Rotation = rotate };
+
+            //Shooting input logic
 
             return _currentControlData;
         }

@@ -1,7 +1,12 @@
 using Assets._Project.Scripts.Gameplay.TanksLogic.Control;
 using UnityEngine;
 
-public class EnemyAIControl : IControlDataGetter<MoveOnlyTankControlData>
+public interface ITurnInPlace
+{
+    void ForceTurnInPlace();
+}
+
+public class EnemyAIControl : IControlDataGetter<MoveOnlyTankControlData>, ITurnInPlace
 {
     private enum AIState { TurnInPlace, MoveForward, TurnWhileMoving }
 

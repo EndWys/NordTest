@@ -9,7 +9,7 @@ namespace Assets._Project.Scripts.Gameplay.PlayerLogic
     {
         [SerializeField] private DefaultTankMovement _movement;
 
-        private IControlDataGetter<MoveOnlyTankControlData> _controlDataGetter;
+        private IControlDataGetter<ShootingTankControlData> _controlDataGetter;
 
         private void Start()
         {
@@ -33,6 +33,8 @@ namespace Assets._Project.Scripts.Gameplay.PlayerLogic
             var controlData = _controlDataGetter.GetControlData();
 
             _movement.Move(controlData.MoveData);
+
+            //_gun.Shoot(controlData.ShootData)
         }
     }
 }
