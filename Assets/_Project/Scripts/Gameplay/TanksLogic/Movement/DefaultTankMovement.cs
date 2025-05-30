@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Assets._Project.Scripts.Gameplay.TanksLogic
 {
     [RequireComponent(typeof(Rigidbody2D))]
-    public class DefaultTankMovement : MonoBehaviour, IMove<DefaultMoveData>
+    public class DefaultTankMovement : MonoBehaviour, IMove<MoveData>
     {
         [SerializeField] private TankMovementSettings _movementSettings;
 
@@ -16,7 +16,7 @@ namespace Assets._Project.Scripts.Gameplay.TanksLogic
             _rb = GetComponent<Rigidbody2D>();
         }
 
-        public void Move(DefaultMoveData moveData)
+        public void Move(MoveData moveData)
         {
             Vector2 forward = transform.up;
             _rb.MovePosition(_rb.position + forward * moveData.Move * _movementSettings.MoveSpeed * Time.fixedDeltaTime);

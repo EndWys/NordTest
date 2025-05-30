@@ -1,5 +1,6 @@
 using Assets._Project.Scripts.Gameplay.TanksLogic.Control;
 using Assets._Project.Scripts.Gameplay.TanksLogic.Movement;
+using Assets._Project.Scripts.Gameplay.TanksLogic.Shooting;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Gameplay.GameInput
@@ -18,9 +19,14 @@ namespace Assets._Project.Scripts.Gameplay.GameInput
             if (Input.GetKey(KeyCode.A)) rotate = -1f;
             else if (Input.GetKey(KeyCode.D)) rotate = 1f;
 
-            _currentControlData.MoveData = new DefaultMoveData() { Move = move, Rotation = rotate };
+            _currentControlData.MoveData = new MoveData() { Move = move, Rotation = rotate };
 
-            //Shooting input logic
+
+            ShootData shootData = new ShootData();
+
+            if (Input.GetMouseButtonDown(0)) shootData.Shoot = true;
+
+            _currentControlData.ShootData = shootData;
 
             return _currentControlData;
         }
