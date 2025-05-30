@@ -8,8 +8,7 @@ namespace Assets._Project.Scripts.Gameplay.TanksLogic.Shooting
         [SerializeField] private Transform _firePoint;
         [SerializeField] private BulletPool _bulletPool;
 
-        [SerializeField] private float _bulletSpeed = 10f;
-        [SerializeField] private float _fireCooldown = 0.5f;
+        [SerializeField] private GunSettings _gunSettings;
 
         private float _cooldownTimer;
 
@@ -32,9 +31,9 @@ namespace Assets._Project.Scripts.Gameplay.TanksLogic.Shooting
             Debug.Log("Shoot");
 
             var bullet = _bulletPool.GetObject();
-            bullet.Init(_firePoint.position, _firePoint.up, _bulletSpeed);
+            bullet.Init(_firePoint.position, _firePoint.up, _gunSettings.BulletSpeed);
 
-            _cooldownTimer = _fireCooldown;
+            _cooldownTimer = _gunSettings.FireCooldown;
         }
     }
 }

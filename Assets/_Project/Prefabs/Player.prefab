@@ -206,8 +206,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _firePoint: {fileID: 5856992252043776129}
   _bulletPool: {fileID: 1841108974411516931}
-  _bulletSpeed: 8
-  _fireCooldown: 0.5
+  _gunSettings: {fileID: 11400000, guid: 1d3eb1ef1f4edcb4981056f35dd78a93, type: 2}
 --- !u!1 &7632358155350273944
 GameObject:
   m_ObjectHideFlags: 0
