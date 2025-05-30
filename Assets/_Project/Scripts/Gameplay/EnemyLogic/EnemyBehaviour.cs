@@ -1,4 +1,5 @@
 using Assets._Project.Scripts.Gameplay.TanksLogic;
+using Assets._Project.Scripts.Gameplay.TanksLogic.Bullets;
 using Assets._Project.Scripts.Gameplay.TanksLogic.Control;
 using UnityEngine;
 
@@ -45,6 +46,12 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
+            if (collision.gameObject.TryGetComponent(out Bullet bullet))
+            {
+                gameObject.SetActive(false);
+                return;
+            }
+
             _turn.ForceTurnInPlace();
         }
     }

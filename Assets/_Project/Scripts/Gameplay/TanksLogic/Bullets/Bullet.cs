@@ -1,21 +1,18 @@
 using Assets._Project.Scripts.ObjectPoolSytem;
+using System;
 using UnityEngine;
 
-namespace Assets._Project.Scripts.Gameplay.TanksLogic.Bullet
+namespace Assets._Project.Scripts.Gameplay.TanksLogic.Bullets
 {
     public class Bullet : PoolObject
     {
-        private BulletPool _pool;
         private Rigidbody2D _rb;
+
+        public event Action<Bullet> OnHit;
 
         private void Awake()
         {
             _rb = GetComponent<Rigidbody2D>();
-        }
-
-        public void SetPool(BulletPool pool)
-        {
-            _pool = pool;
         }
 
         public void Init(Vector2 position, Vector2 direction, float speed)
@@ -38,7 +35,7 @@ namespace Assets._Project.Scripts.Gameplay.TanksLogic.Bullet
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            _pool.ReleaseObject(this);
+            OnHit?.Invoke(this);
         }
     }
 }

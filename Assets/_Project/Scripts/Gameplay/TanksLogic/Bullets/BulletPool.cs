@@ -1,7 +1,7 @@
 using Assets._Project.Scripts.ObjectPoolSytem;
 using UnityEngine;
 
-namespace Assets._Project.Scripts.Gameplay.TanksLogic.Bullet
+namespace Assets._Project.Scripts.Gameplay.TanksLogic.Bullets
 {
     public class BulletPool : GenericObjectPool<Bullet>
     {
@@ -13,7 +13,6 @@ namespace Assets._Project.Scripts.Gameplay.TanksLogic.Bullet
         protected override Bullet CratePoolObject()
         {
             var bullet = Instantiate(_bulletPrefab);
-            bullet.SetPool(this);
             return bullet;
         }
     }

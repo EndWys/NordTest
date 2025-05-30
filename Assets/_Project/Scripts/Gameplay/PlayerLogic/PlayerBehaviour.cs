@@ -1,3 +1,4 @@
+using Assets._Project.Scripts.Gameplay.EnemyLogic;
 using Assets._Project.Scripts.Gameplay.GameInput;
 using Assets._Project.Scripts.Gameplay.TanksLogic;
 using Assets._Project.Scripts.Gameplay.TanksLogic.Control;
@@ -40,6 +41,15 @@ namespace Assets._Project.Scripts.Gameplay.PlayerLogic
             var controlData = _controlDataGetter.GetControlData();
 
             _movement.Move(controlData.MoveData);
+        }
+
+        private void OnCollisionEnter2D(Collision2D collision)
+        {
+            if (collision.gameObject.TryGetComponent(out EnemyBehaviour bullet))
+            {
+                gameObject.SetActive(false);
+                return;
+            }
         }
     }
 }

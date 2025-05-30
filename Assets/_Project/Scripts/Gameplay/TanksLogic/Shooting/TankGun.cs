@@ -1,4 +1,4 @@
-using Assets._Project.Scripts.Gameplay.TanksLogic.Bullet;
+using Assets._Project.Scripts.Gameplay.TanksLogic.Bullets;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Gameplay.TanksLogic.Shooting
@@ -14,6 +14,7 @@ namespace Assets._Project.Scripts.Gameplay.TanksLogic.Shooting
 
         public void Init()
         {
+            _cooldownTimer = 0;
             _bulletPool.CreatePool();
         }
 
@@ -28,12 +29,18 @@ namespace Assets._Project.Scripts.Gameplay.TanksLogic.Shooting
             if (!shootData.Shoot || _cooldownTimer > 0f)
                 return;
 
-            Debug.Log("Shoot");
-
             var bullet = _bulletPool.GetObject();
             bullet.Init(_firePoint.position, _firePoint.up, _gunSettings.BulletSpeed);
+            bullet.OnHit += OnBulletHit;
 
             _cooldownTimer = _gunSettings.FireCooldown;
+        }
+
+        private void OnBulletHit(Bullet bullet)
+        {
+            bullet.OnHit -= OnBulletHit;
+
+            _bulletPool.ReleaseObject(bullet);
         }
     }
 }
