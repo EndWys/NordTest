@@ -9,7 +9,7 @@ namespace Assets._Project.Scripts.Gameplay.GameInput
     {
         private ShootingTankControlData _currentControlData = new ShootingTankControlData();
 
-        public ShootingTankControlData GetControlData()
+        public void UpdateControlData()
         {
             float move = 0f;
             if (Input.GetKey(KeyCode.W)) move = 1f;
@@ -27,7 +27,10 @@ namespace Assets._Project.Scripts.Gameplay.GameInput
             if (Input.GetMouseButtonDown(0)) shootData.Shoot = true;
 
             _currentControlData.ShootData = shootData;
+        }
 
+        public ShootingTankControlData GetControlData()
+        {
             return _currentControlData;
         }
     }

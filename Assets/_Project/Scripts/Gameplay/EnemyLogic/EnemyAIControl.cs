@@ -28,7 +28,7 @@ public class EnemyAIControl : IControlDataGetter<MoveOnlyTankControlData>, ITurn
         EnterTurnInPlaceState();
     }
 
-    public MoveOnlyTankControlData GetControlData()
+    public void UpdateControlData()
     {
         switch (_currentState)
         {
@@ -48,13 +48,16 @@ public class EnemyAIControl : IControlDataGetter<MoveOnlyTankControlData>, ITurn
                 _currentControlData = new MoveOnlyTankControlData();
                 break;
         }
+    }
 
+    public MoveOnlyTankControlData GetControlData()
+    {
         return _currentControlData;
     }
 
     private void HandleTurnInPlace()
     {
-        float rotationStep = _changingDirectionAngel * Time.fixedDeltaTime;
+        float rotationStep = _changingDirectionAngel * Time.deltaTime;
         _rotatedAngle += rotationStep;
 
         if (_rotatedAngle >= Mathf.Abs(_targetAngle))
@@ -68,7 +71,7 @@ public class EnemyAIControl : IControlDataGetter<MoveOnlyTankControlData>, ITurn
 
     private void HandleMoveForward()
     {
-        _moveTimer -= Time.fixedDeltaTime;
+        _moveTimer -= Time.deltaTime;
         if (_moveTimer <= 0f)
         {
             EnterTurnWhileMovingState();
@@ -80,7 +83,7 @@ public class EnemyAIControl : IControlDataGetter<MoveOnlyTankControlData>, ITurn
 
     private void HandleTurnWhileMoving()
     {
-        float rotationStep = _changingDirectionAngel * Time.fixedDeltaTime;
+        float rotationStep = _changingDirectionAngel * Time.deltaTime;
         _rotatedAngle += rotationStep;
         if (_rotatedAngle >= Mathf.Abs(_targetAngle))
         {

@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: EnemyTankMovementSettings
   m_EditorClassIdentifier: 
   MoveSpeed: 0.5
-  RotationSpeed: 45
+  RotationSpeed: 90

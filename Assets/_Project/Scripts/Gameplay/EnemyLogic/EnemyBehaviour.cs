@@ -26,6 +26,10 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
             _turn = aiController;
             _controlDataGetter = aiController;
         }
+        private void Update()
+        {
+            _controlDataGetter.UpdateControlData();
+        }
 
         private void FixedUpdate()
         {
