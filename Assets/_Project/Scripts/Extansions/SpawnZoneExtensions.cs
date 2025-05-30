@@ -7,6 +7,7 @@ namespace Assets._Project.Scripts.Extansions
         public static Vector2 GetRandomPointOnBounds(this Collider2D collider)
         {
             Bounds bounds = collider.bounds;
+
             float perimeter = 2 * (bounds.size.x + bounds.size.y);
             float randomPerimeterPos = Random.Range(0f, perimeter);
 
@@ -26,6 +27,19 @@ namespace Assets._Project.Scripts.Extansions
             {
                 return new Vector2(bounds.min.x, bounds.max.y - (randomPerimeterPos - 2 * bounds.size.x - bounds.size.y));
             }
+        }
+
+        public static Vector2[] GetCornerPoints(this Collider2D collider)
+        {
+            Bounds bounds = collider.bounds;
+
+            return new Vector2[]
+            {
+                new Vector2(bounds.min.x, bounds.min.y),
+                new Vector2(bounds.max.x, bounds.min.y),
+                new Vector2(bounds.max.x, bounds.max.y),
+                new Vector2(bounds.min.x, bounds.max.y)
+            };
         }
     }
 }

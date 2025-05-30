@@ -3,6 +3,7 @@ using Assets._Project.Scripts.Gameplay.GameInput;
 using Assets._Project.Scripts.Gameplay.TanksLogic;
 using Assets._Project.Scripts.Gameplay.TanksLogic.Control;
 using Assets._Project.Scripts.Gameplay.TanksLogic.Shooting;
+using System;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Gameplay.PlayerLogic
@@ -14,10 +15,7 @@ namespace Assets._Project.Scripts.Gameplay.PlayerLogic
 
         private IControlDataGetter<ShootingTankControlData> _controlDataGetter;
 
-        private void Start()
-        {
-            Init();
-        }
+        public event Action OnHit;
 
         public void Init()
         {
@@ -47,7 +45,7 @@ namespace Assets._Project.Scripts.Gameplay.PlayerLogic
         {
             if (collision.gameObject.TryGetComponent(out EnemyBehaviour bullet))
             {
-                gameObject.SetActive(false);
+                OnHit?.Invoke();
                 return;
             }
         }

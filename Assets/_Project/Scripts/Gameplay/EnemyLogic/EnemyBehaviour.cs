@@ -17,11 +17,6 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
 
         public event Action<EnemyBehaviour> OnHit;
 
-        private void Start()
-        {
-            Init();
-        }
-
         public void Init()
         {
             _movement.Init();
