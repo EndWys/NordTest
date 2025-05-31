@@ -1,4 +1,5 @@
 using Assets._Project.Scripts.Extansions;
+using Assets._Project.Scripts.UI;
 using System.Collections;
 using UnityEngine;
 
@@ -26,6 +27,8 @@ namespace Assets._Project.Scripts.Gameplay.PlayerLogic
 
         private void Despawn()
         {
+            GameUI.Instance.ShowGameOverScreen();
+
             _player.gameObject.SetActive(false);
             StartCoroutine(RespawnPlayerCoroutine());
         }
@@ -34,6 +37,8 @@ namespace Assets._Project.Scripts.Gameplay.PlayerLogic
         {
             yield return new WaitForSeconds(1f);
             yield return SpawnWithRetryCoroutine();
+
+            GameUI.Instance.HideCenterPanel();
         }
 
         private IEnumerator SpawnWithRetryCoroutine()
