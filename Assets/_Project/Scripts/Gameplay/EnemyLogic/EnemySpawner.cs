@@ -1,4 +1,5 @@
 using Assets._Project.Scripts.Extansions;
+using Assets._Project.Scripts.UI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -56,6 +57,10 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
 
                 yield return null;
             }
+
+
+            GameUI.Instance.SetEnemyCount(spawned);
+            GameUI.Instance.HideCenterPanel();
         }
 
         private Vector2? GetValidSpawnPoint()
@@ -77,9 +82,13 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
             _enemyPool.ReleaseObject(enemy);
             _activeEnemies.Remove(enemy);
 
+            GameUI.Instance.SetEnemyCount(_activeEnemies.Count);
+
             if (_activeEnemies.Count == 0)
             {
                 StartCoroutine(RespawnAllEnemiesAfterDelay());
+
+                GameUI.Instance.ShowWinScreen();
             }
         }
 
