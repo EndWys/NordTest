@@ -1,4 +1,5 @@
 using Assets._Project.Scripts.Extansions;
+using Assets._Project.Scripts.SaveSystem;
 using Assets._Project.Scripts.UI;
 using System.Collections;
 using UnityEngine;
@@ -17,12 +18,41 @@ namespace Assets._Project.Scripts.Gameplay.PlayerLogic
 
         private Vector2[] _cornerPoints;
 
+        private SavingService _savingService;
+        private float _autoSaveInterval = 2f;
+
         public void Init()
         {
+            _savingService = new SavingService("player_spawner");
+
+            TryToLoadPlayerData();
+            StartCoroutine(AutoSaveRoutine());
+
             _cornerPoints = _spawnZone.GetCornerPoints();
 
             _player.Init();
             _player.OnHit += Despawn;
+        }
+
+        private void TryToLoadPlayerData()
+        {
+            var save = _savingService.Load<TankSaveData>();
+
+            if (save == null)
+                return;
+
+            _player.transform.position = save.Position;
+            _player.transform.rotation = save.Rotation;
+        }
+
+
+        private IEnumerator AutoSaveRoutine()
+        {
+            while (true) {
+
+                yield return new WaitForSeconds(_autoSaveInterval);
+                _savingService.Save(new TankSaveData(_player.transform.position, _player.transform.rotation));
+            }
         }
 
         private void Despawn()
