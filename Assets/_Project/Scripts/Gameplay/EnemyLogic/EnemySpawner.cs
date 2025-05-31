@@ -46,7 +46,7 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
                     enemy.transform.position = spawnPoint.Value;
                     enemy.gameObject.SetActive(true);
 
-                    enemy.OnHit += HandleEnemyHit;
+                    enemy.OnHit += Despawn;
                     _activeEnemies.Add(enemy);
 
                     enemy.Init();
@@ -71,9 +71,9 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
             return null;
         }
 
-        private void HandleEnemyHit(EnemyBehaviour enemy)
+        private void Despawn(EnemyBehaviour enemy)
         {
-            enemy.OnHit -= HandleEnemyHit;
+            enemy.OnHit -= Despawn;
             _enemyPool.ReleaseObject(enemy);
             _activeEnemies.Remove(enemy);
 

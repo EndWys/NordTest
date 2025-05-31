@@ -21,10 +21,10 @@ namespace Assets._Project.Scripts.Gameplay.PlayerLogic
             _cornerPoints = _spawnZone.GetCornerPoints();
 
             _player.Init();
-            _player.OnHit += HandlePlayerHit;
+            _player.OnHit += Despawn;
         }
 
-        private void HandlePlayerHit()
+        private void Despawn()
         {
             _player.gameObject.SetActive(false);
             StartCoroutine(RespawnPlayerCoroutine());
