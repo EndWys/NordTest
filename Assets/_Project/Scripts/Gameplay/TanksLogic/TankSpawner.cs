@@ -2,46 +2,49 @@ using Assets._Project.Scripts.SaveSystem;
 using System.Collections;
 using UnityEngine;
 
-public abstract class TankSpawner<TData> : MonoBehaviour, ISaveLoad<TData> where TData : class, ISaveData
+namespace Assets._Project.Scripts.Gameplay.TanksLogic
 {
-    protected SavingService _savingService;
-
-    private float _autoSaveInterval = 2f;
-
-    protected abstract string _saveFileName { get; }
-
-    public virtual void Init()
+    public abstract class TankSpawner<TData> : MonoBehaviour, ISaveLoad<TData> where TData : class, ISaveData
     {
-        _savingService = new SavingService(_saveFileName);
+        protected SavingService _savingService;
 
-        if (!TryToLoadSave())
-            StartCoroutine(Spawn());
+        private float _autoSaveInterval = 2f;
 
-        StartCoroutine(AutoSave());
-    }
+        protected abstract string _saveFileName { get; }
 
-    protected abstract IEnumerator Spawn();
-
-    private bool TryToLoadSave()
-    {
-        var save = _savingService.Load<TData>();
-
-        if (save == null)
-            return false;
-
-        Load(save);
-        return true;
-    }
-
-    public IEnumerator AutoSave()
-    {
-        while (true)
+        public virtual void Init()
         {
-            yield return new WaitForSeconds(_autoSaveInterval);
-            Save();
-        }
-    }
+            _savingService = new SavingService(_saveFileName);
 
-    public abstract void Save();
-    public abstract void Load(TData data);
+            if (!TryToLoadSave())
+                StartCoroutine(Spawn());
+
+            StartCoroutine(AutoSave());
+        }
+
+        protected abstract IEnumerator Spawn();
+
+        private bool TryToLoadSave()
+        {
+            var save = _savingService.Load<TData>();
+
+            if (save == null)
+                return false;
+
+            Load(save);
+            return true;
+        }
+
+        public IEnumerator AutoSave()
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(_autoSaveInterval);
+                Save();
+            }
+        }
+
+        public abstract void Save();
+        public abstract void Load(TData data);
+    }
 }
