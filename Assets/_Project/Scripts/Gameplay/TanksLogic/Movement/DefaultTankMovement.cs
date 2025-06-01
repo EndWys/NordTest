@@ -1,11 +1,17 @@
+using Assets._Project.Scripts.Gameplay.TanksLogic.Control;
 using Assets._Project.Scripts.Gameplay.TanksLogic.Movement;
 using Assets._Project.Scripts.Gameplay.TanksLogic.Scriptables;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Gameplay.TanksLogic
 {
+     /* 
+     * In the future, we will be able to create a new class that implements IMove<T>
+     * and replace the tank movement method — for example, with separate control for each track, etc.
+     */
+
     [RequireComponent(typeof(Rigidbody2D))]
-    public class DefaultTankMovement : MonoBehaviour, IMove<MoveData>
+    public class DefaultTankMovement : MonoBehaviour, IMove<DefaultMovementControlData>
     {
         [SerializeField] private TankMovementSettings _movementSettings;
 
@@ -16,7 +22,7 @@ namespace Assets._Project.Scripts.Gameplay.TanksLogic
             _rb = GetComponent<Rigidbody2D>();
         }
 
-        public void Move(MoveData moveData)
+        public void TryToMove(DefaultMovementControlData moveData)
         {
             Vector2 forward = transform.up;
             _rb.MovePosition(_rb.position + forward * moveData.Move * _movementSettings.MoveSpeed * Time.fixedDeltaTime);

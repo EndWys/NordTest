@@ -9,9 +9,15 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
 {
     public class EnemyBehaviour : PoolObject
     {
+        /*
+         * To add shooting capability to the AI tank,
+         * you just need to add the TankGun component and a new IControlHandler<GunControlData> 
+         * that will decide when the AI tank should shoot and pass the gun control data — this data will then be processed by the TankGun component.
+         */
+
         [SerializeField] private DefaultTankMovement _movement;
 
-        private IControlDataGetter<MoveOnlyTankControlData> _controlDataGetter;
+        private IControlHandler<DefaultMovementControlData> _moveControl;
 
         private ITurnInPlace _turn;
 
@@ -21,21 +27,19 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
         {
             _movement.Init();
 
-            var aiController = new EnemyAIControl();
+            var aiMovementControl = new EnemyMoveControl();
 
-            _turn = aiController;
-            _controlDataGetter = aiController;
+            _turn = aiMovementControl;
+            _moveControl = aiMovementControl;
         }
         private void Update()
         {
-            _controlDataGetter.UpdateControlData();
+            _moveControl.UpdateControlData();
         }
 
         private void FixedUpdate()
         {
-            var controlData = _controlDataGetter.GetControlData();
-
-            _movement.Move(controlData.MoveData);
+            _movement.TryToMove(_moveControl.GetControlData());
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
