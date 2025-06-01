@@ -16,12 +16,12 @@ namespace Assets._Project.Scripts.SaveSystem
             _saveFileName = saveFileName;
         }
 
-        public void Save<T>(T entitiy) where T : class
+        public void Save<T>(T entitiy) where T : class, ISaveData
         {
             File.WriteAllText(_path, JsonUtility.ToJson(entitiy));
         }
 
-        public T Load<T>() where T : class
+        public T Load<T>() where T : class, ISaveData
         {
             if (!File.Exists(_path))
                 return null;

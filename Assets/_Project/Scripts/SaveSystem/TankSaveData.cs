@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Assets._Project.Scripts.SaveSystem
 {
     [Serializable]
-    public class TankSaveData
+    public class TankSaveData : ISaveData
     {
         public Vector3 Position;
         public Quaternion Rotation;

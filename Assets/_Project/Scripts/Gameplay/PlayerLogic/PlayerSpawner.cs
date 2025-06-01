@@ -6,53 +6,27 @@ using UnityEngine;
 
 namespace Assets._Project.Scripts.Gameplay.PlayerLogic
 {
-    public class PlayerSpawner : MonoBehaviour
+    public class PlayerSpawner : TankSpawner<TankSaveData>
     {
         [SerializeField] private PlayerBehaviour _player;
 
         [Header("Spawn Zone Settings")]
         [SerializeField] private Collider2D _spawnZone;
-
-        [SerializeField] private float _spawnCheckRadius = 1f;
         [SerializeField] private LayerMask _tankLayer;
+        [SerializeField] private float _spawnCheckRadius = 1f;
 
         private Vector2[] _cornerPoints;
 
-        private SavingService _savingService;
-        private float _autoSaveInterval = 2f;
+        protected override string _saveFileName => "player_spawner";
 
-        public void Init()
+        public override void Init()
         {
-            _savingService = new SavingService("player_spawner");
-
-            TryToLoadPlayerData();
-            StartCoroutine(AutoSaveRoutine());
-
             _cornerPoints = _spawnZone.GetCornerPoints();
 
             _player.Init();
             _player.OnHit += Despawn;
-        }
 
-        private void TryToLoadPlayerData()
-        {
-            var save = _savingService.Load<TankSaveData>();
-
-            if (save == null)
-                return;
-
-            _player.transform.position = save.Position;
-            _player.transform.rotation = save.Rotation;
-        }
-
-
-        private IEnumerator AutoSaveRoutine()
-        {
-            while (true) {
-
-                yield return new WaitForSeconds(_autoSaveInterval);
-                _savingService.Save(new TankSaveData(_player.transform.position, _player.transform.rotation));
-            }
+            base.Init();
         }
 
         private void Despawn()
@@ -66,12 +40,12 @@ namespace Assets._Project.Scripts.Gameplay.PlayerLogic
         private IEnumerator RespawnPlayerCoroutine()
         {
             yield return new WaitForSeconds(1f);
-            yield return SpawnWithRetryCoroutine();
+            yield return Spawn();
 
             GameUI.Instance.HideCenterPanel();
         }
 
-        private IEnumerator SpawnWithRetryCoroutine()
+        protected override IEnumerator Spawn()
         {
             while (true)
             {
@@ -87,6 +61,17 @@ namespace Assets._Project.Scripts.Gameplay.PlayerLogic
                     yield return null;
                 }
             }
+        }
+
+        public override void Load(TankSaveData save)
+        {
+            _player.transform.position = save.Position;
+            _player.transform.rotation = save.Rotation;
+        }
+
+        public override void Save()
+        {
+            _savingService.Save(new TankSaveData(_player.transform.position, _player.transform.rotation));
         }
     }
 }

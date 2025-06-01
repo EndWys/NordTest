@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Assets._Project.Scripts.Gameplay.EnemyLogic
 {
-    public class EnemySpawner : MonoBehaviour
+    public class EnemySpawner : TankSpawner<EnemySpawnerSaveData>
     {
         [SerializeField] private EnemyPool _enemyPool;
 
@@ -21,48 +21,27 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
         [SerializeField] private int _enemyCount = 5;
         [SerializeField] private float _respawnDelay = 1f;
 
-        private SavingService _savingService;
-
         private readonly List<EnemyBehaviour> _activeEnemies = new();
 
-        private float _autoSaveInterval = 2f;
+        protected override string _saveFileName => "enemy_spawner";
 
-        public void Init()
+        public override void Init()
         {
             _enemyPool.CreatePool();
             
-            _savingService = new SavingService("enemy_spawner");
-
-            var save = _savingService.Load<EnemySpawnerSaveData>();
-
-            if (save != null && save.EnemySaveDatas.Length > 0)
-                LoadSave(save);
-            else
-                SpawnAllEnemies();
-
-            StartCoroutine(AutoSaveRoutine());
+            base.Init();
         }
 
-        private void LoadSave(EnemySpawnerSaveData save)
+        public override void Load(EnemySpawnerSaveData save)
         {
-            StartCoroutine(LoadEnemiesFromSaveRoutine(save.EnemySaveDatas));
+            StartCoroutine(LoadEnemiesFromSaveRoutine(save));
         }
 
-        private IEnumerator LoadEnemiesFromSaveRoutine(TankSaveData[] savedEnemies)
+        private IEnumerator LoadEnemiesFromSaveRoutine(EnemySpawnerSaveData save)
         {
-            foreach (var data in savedEnemies)
+            foreach (var data in save.EnemySaveDatas)
             {
-                EnemyBehaviour enemy = _enemyPool.GetObject();
-
-                enemy.transform.position = data.Position;
-                enemy.transform.rotation = data.Rotation;
-                enemy.gameObject.SetActive(true);
-
-                enemy.OnHit += Despawn;
-                _activeEnemies.Add(enemy);
-
-                enemy.Init();
-
+                SpawnSingleEnemy(data.Position, data.Rotation);
                 yield return null;
             }
 
@@ -70,16 +49,22 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
             GameUI.Instance.HideCenterPanel();
         }
 
-        private IEnumerator AutoSaveRoutine()
+        private void Despawn(EnemyBehaviour enemy)
         {
-            while (true)
-            {
-                yield return new WaitForSeconds(_autoSaveInterval);
-                Sava();
-            }
+            enemy.OnHit -= Despawn;
+
+            _enemyPool.ReleaseObject(enemy);
+            _activeEnemies.Remove(enemy);
+
+            Save();
+
+            GameUI.Instance.SetEnemyCount(_activeEnemies.Count);
+
+            if (TryToStartEnemiesRespawn())
+                GameUI.Instance.ShowWinScreen();
         }
 
-        private void Sava()
+        public override void Save()
         {
             var savedData = new TankSaveData[_activeEnemies.Count];
             for (int i = 0; i < _activeEnemies.Count; i++)
@@ -90,40 +75,6 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
 
             var save = new EnemySpawnerSaveData(savedData);
             _savingService.Save(save);
-        }
-
-        private void SpawnAllEnemies()
-        {
-            StartCoroutine(SpawnEnemiesCoroutine(_enemyCount));
-        }
-
-        private IEnumerator SpawnEnemiesCoroutine(int count)
-        {
-            int spawned = 0;
-
-            while (spawned < count)
-            {
-                Vector2? spawnPoint = GetValidSpawnPoint();
-                if (spawnPoint.HasValue)
-                {
-                    EnemyBehaviour enemy = _enemyPool.GetObject();
-                    enemy.transform.position = spawnPoint.Value;
-                    enemy.gameObject.SetActive(true);
-
-                    enemy.OnHit += Despawn;
-                    _activeEnemies.Add(enemy);
-
-                    enemy.Init();
-
-                    spawned++;
-                }
-
-                yield return null;
-            }
-
-
-            GameUI.Instance.SetEnemyCount(spawned);
-            GameUI.Instance.HideCenterPanel();
         }
 
         private Vector2? GetValidSpawnPoint()
@@ -139,28 +90,53 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
             return null;
         }
 
-        private void Despawn(EnemyBehaviour enemy)
+        private bool TryToStartEnemiesRespawn()
         {
-            enemy.OnHit -= Despawn;
-            _enemyPool.ReleaseObject(enemy);
-            _activeEnemies.Remove(enemy);
+            bool allEnemiesDestroyed = _activeEnemies.Count == 0;
 
-            Sava();
-
-            GameUI.Instance.SetEnemyCount(_activeEnemies.Count);
-
-            if (_activeEnemies.Count == 0)
-            {
+            if (allEnemiesDestroyed)
                 StartCoroutine(RespawnAllEnemiesAfterDelay());
 
-                GameUI.Instance.ShowWinScreen();
-            }
+            return allEnemiesDestroyed;
         }
 
         private IEnumerator RespawnAllEnemiesAfterDelay()
         {
             yield return new WaitForSeconds(_respawnDelay);
-            SpawnAllEnemies();
+            yield return Spawn();
+        }
+
+        protected override IEnumerator Spawn()
+        {
+            int spawned = 0;
+
+            while (spawned < _enemyCount)
+            {
+                Vector2? spawnPoint = GetValidSpawnPoint();
+                if (spawnPoint.HasValue)
+                {
+                    SpawnSingleEnemy(spawnPoint.Value, Quaternion.identity);
+                    spawned++;
+                }
+
+                yield return null;
+            }
+
+            GameUI.Instance.SetEnemyCount(_activeEnemies.Count);
+            GameUI.Instance.HideCenterPanel();
+        }
+
+        private void SpawnSingleEnemy(Vector2 position, Quaternion rotation)
+        {
+            EnemyBehaviour enemy = _enemyPool.GetObject();
+
+            enemy.transform.position = position;
+            enemy.transform.rotation = rotation;
+
+            enemy.OnHit += Despawn;
+            _activeEnemies.Add(enemy);
+
+            enemy.Init();
         }
     }
 }
