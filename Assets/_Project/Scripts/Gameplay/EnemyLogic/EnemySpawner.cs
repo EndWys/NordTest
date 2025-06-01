@@ -1,4 +1,6 @@
 using Assets._Project.Scripts.Extansions;
+using Assets._Project.Scripts.Gameplay.TanksLogic;
+using Assets._Project.Scripts.SaveSystem;
 using Assets._Project.Scripts.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,7 +8,7 @@ using UnityEngine;
 
 namespace Assets._Project.Scripts.Gameplay.EnemyLogic
 {
-    public class EnemySpawner : MonoBehaviour
+    public class EnemySpawner : TankSpawner<EnemySpawnerSaveData>
     {
         [SerializeField] private EnemyPool _enemyPool;
 
@@ -22,45 +24,58 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
 
         private readonly List<EnemyBehaviour> _activeEnemies = new();
 
-        public void Init()
+        protected override string _saveFileName => "enemy_spawner";
+
+        public override void Init()
         {
             _enemyPool.CreatePool();
-
-            SpawnAllEnemies();
+            
+            base.Init();
         }
 
-        private void SpawnAllEnemies()
+        public override void Load(EnemySpawnerSaveData save)
         {
-            StartCoroutine(SpawnEnemiesCoroutine(_enemyCount));
+            StartCoroutine(LoadEnemiesFromSaveRoutine(save));
         }
 
-        private IEnumerator SpawnEnemiesCoroutine(int count)
+        private IEnumerator LoadEnemiesFromSaveRoutine(EnemySpawnerSaveData save)
         {
-            int spawned = 0;
-
-            while (spawned < count)
+            foreach (var data in save.EnemySaveDatas)
             {
-                Vector2? spawnPoint = GetValidSpawnPoint();
-                if (spawnPoint.HasValue)
-                {
-                    EnemyBehaviour enemy = _enemyPool.GetObject();
-                    enemy.transform.position = spawnPoint.Value;
-                    enemy.gameObject.SetActive(true);
-
-                    enemy.OnHit += Despawn;
-                    _activeEnemies.Add(enemy);
-
-                    enemy.Init();
-
-                    spawned++;
-                }
-
+                SpawnSingleEnemy(data.Position, data.Rotation);
                 yield return null;
             }
 
-
-            GameUI.Instance.SetEnemyCount(spawned);
+            GameUI.Instance.SetEnemyCount(_activeEnemies.Count);
             GameUI.Instance.HideCenterPanel();
+        }
+
+        private void Despawn(EnemyBehaviour enemy)
+        {
+            enemy.OnHit -= Despawn;
+
+            _enemyPool.ReleaseObject(enemy);
+            _activeEnemies.Remove(enemy);
+
+            Save();
+
+            GameUI.Instance.SetEnemyCount(_activeEnemies.Count);
+
+            if (TryToStartEnemiesRespawn())
+                GameUI.Instance.ShowWinScreen();
+        }
+
+        public override void Save()
+        {
+            var savedData = new TankSaveData[_activeEnemies.Count];
+            for (int i = 0; i < _activeEnemies.Count; i++)
+            {
+                var enemy = _activeEnemies[i];
+                savedData[i] = new TankSaveData(enemy.transform.position, enemy.transform.rotation);
+            }
+
+            var save = new EnemySpawnerSaveData(savedData);
+            _savingService.Save(save);
         }
 
         private Vector2? GetValidSpawnPoint()
@@ -76,26 +91,53 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
             return null;
         }
 
-        private void Despawn(EnemyBehaviour enemy)
+        private bool TryToStartEnemiesRespawn()
         {
-            enemy.OnHit -= Despawn;
-            _enemyPool.ReleaseObject(enemy);
-            _activeEnemies.Remove(enemy);
+            bool allEnemiesDestroyed = _activeEnemies.Count == 0;
 
-            GameUI.Instance.SetEnemyCount(_activeEnemies.Count);
-
-            if (_activeEnemies.Count == 0)
-            {
+            if (allEnemiesDestroyed)
                 StartCoroutine(RespawnAllEnemiesAfterDelay());
 
-                GameUI.Instance.ShowWinScreen();
-            }
+            return allEnemiesDestroyed;
         }
 
         private IEnumerator RespawnAllEnemiesAfterDelay()
         {
             yield return new WaitForSeconds(_respawnDelay);
-            SpawnAllEnemies();
+            yield return Spawn();
+        }
+
+        protected override IEnumerator Spawn()
+        {
+            int spawned = 0;
+
+            while (spawned < _enemyCount)
+            {
+                Vector2? spawnPoint = GetValidSpawnPoint();
+                if (spawnPoint.HasValue)
+                {
+                    SpawnSingleEnemy(spawnPoint.Value, Quaternion.identity);
+                    spawned++;
+                }
+
+                yield return null;
+            }
+
+            GameUI.Instance.SetEnemyCount(_activeEnemies.Count);
+            GameUI.Instance.HideCenterPanel();
+        }
+
+        private void SpawnSingleEnemy(Vector2 position, Quaternion rotation)
+        {
+            EnemyBehaviour enemy = _enemyPool.GetObject();
+
+            enemy.transform.position = position;
+            enemy.transform.rotation = rotation;
+
+            enemy.OnHit += Despawn;
+            _activeEnemies.Add(enemy);
+
+            enemy.Init();
         }
     }
 }
