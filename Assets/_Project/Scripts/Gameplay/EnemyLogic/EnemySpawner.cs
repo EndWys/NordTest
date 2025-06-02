@@ -10,7 +10,7 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
 {
     public class EnemySpawner : TankSpawner<EnemySpawnerSaveData>
     {
-        [SerializeField] private EnemyPool _enemyPool;
+        [SerializeField] private EnemyFactory _enemyFactory;
 
         [Header("Spawn Zone Settings")]
         [SerializeField] private Collider2D _spawnZone;
@@ -28,7 +28,7 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
 
         public override void Init()
         {
-            _enemyPool.CreatePool();
+            _enemyFactory.Init();
             
             base.Init();
         }
@@ -54,8 +54,9 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
         {
             enemy.OnHit -= Despawn;
 
-            _enemyPool.ReleaseObject(enemy);
             _activeEnemies.Remove(enemy);
+
+            _enemyFactory.Despawn(enemy);
 
             Save();
 
@@ -70,12 +71,10 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
             var savedData = new TankSaveData[_activeEnemies.Count];
             for (int i = 0; i < _activeEnemies.Count; i++)
             {
-                var enemy = _activeEnemies[i];
-                savedData[i] = new TankSaveData(enemy.transform.position, enemy.transform.rotation);
+                savedData[i] = _activeEnemies[i].GetSaveData();
             }
 
-            var save = new EnemySpawnerSaveData(savedData);
-            _savingService.Save(save);
+            _savingService.Save(new EnemySpawnerSaveData(savedData));
         }
 
         private Vector2? GetValidSpawnPoint()
@@ -129,15 +128,10 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
 
         private void SpawnSingleEnemy(Vector2 position, Quaternion rotation)
         {
-            EnemyBehaviour enemy = _enemyPool.GetObject();
+            var enemy = _enemyFactory.Spawn(position, rotation);
 
-            enemy.transform.position = position;
-            enemy.transform.rotation = rotation;
-
-            enemy.OnHit += Despawn;
             _activeEnemies.Add(enemy);
-
-            enemy.Init();
+            enemy.OnHit += Despawn;
         }
     }
 }

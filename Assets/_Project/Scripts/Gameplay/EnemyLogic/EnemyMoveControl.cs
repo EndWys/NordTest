@@ -8,7 +8,7 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
         void ForceTurnInPlace();
     }
 
-    public class EnemyAIControl : IControlDataGetter<MoveOnlyTankControlData>, ITurnInPlace
+    public class EnemyMoveControl : IControlHandler<DefaultMovementControlData>, ITurnInPlace
     {
         private enum AIState { TurnInPlace, MoveForward, TurnWhileMoving }
 
@@ -23,9 +23,9 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
         private float _moveTimer;
         private float _moveDuration;
 
-        private MoveOnlyTankControlData _currentControlData = new MoveOnlyTankControlData();
+        private DefaultMovementControlData _currentControlData = new DefaultMovementControlData();
 
-        public EnemyAIControl()
+        public EnemyMoveControl()
         {
             EnterTurnInPlaceState();
         }
@@ -47,12 +47,12 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
                     break;
 
                 default:
-                    _currentControlData = new MoveOnlyTankControlData();
+                    _currentControlData = new DefaultMovementControlData();
                     break;
             }
         }
 
-        public MoveOnlyTankControlData GetControlData()
+        public DefaultMovementControlData GetControlData()
         {
             return _currentControlData;
         }
@@ -67,8 +67,8 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
                 EnterMoveForwardState();
             }
 
-            _currentControlData.MoveData.Move = 0f;
-            _currentControlData.MoveData.Rotation = Mathf.Sign(_targetAngle);
+            _currentControlData.Move = 0f;
+            _currentControlData.Rotation = Mathf.Sign(_targetAngle);
         }
 
         private void HandleMoveForward()
@@ -79,8 +79,8 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
                 EnterTurnWhileMovingState();
             }
 
-            _currentControlData.MoveData.Move = 1f;
-            _currentControlData.MoveData.Rotation = 0f;
+            _currentControlData.Move = 1f;
+            _currentControlData.Rotation = 0f;
         }
 
         private void HandleTurnWhileMoving()
@@ -92,8 +92,8 @@ namespace Assets._Project.Scripts.Gameplay.EnemyLogic
                 EnterMoveForwardState();
             }
 
-            _currentControlData.MoveData.Move = 1f;
-            _currentControlData.MoveData.Rotation = Mathf.Sign(_targetAngle);
+            _currentControlData.Move = 1f;
+            _currentControlData.Rotation = Mathf.Sign(_targetAngle);
         }
 
         public void ForceTurnInPlace()

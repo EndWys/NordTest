@@ -72,7 +72,7 @@ namespace Assets._Project.Scripts.Gameplay.PlayerLogic
 
         public override void Save()
         {
-            _savingService.Save(new TankSaveData(_player.transform.position, _player.transform.rotation));
+            _savingService.Save(_player.GetSaveData());
         }
     }
 }

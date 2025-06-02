@@ -1,4 +1,5 @@
 using Assets._Project.Scripts.Gameplay.TanksLogic.Bullets;
+using Assets._Project.Scripts.Gameplay.TanksLogic.Control;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Gameplay.TanksLogic.Shooting
@@ -24,9 +25,9 @@ namespace Assets._Project.Scripts.Gameplay.TanksLogic.Shooting
                 _cooldownTimer -= Time.deltaTime;
         }
 
-        public void TryToShoot(ShootData shootData)
+        public void TryToShoot(GunControlData gunData)
         {
-            if (!shootData.Shoot || _cooldownTimer > 0f)
+            if (!gunData.Shoot || _cooldownTimer > 0f)
                 return;
 
             var bullet = _bulletPool.GetObject();

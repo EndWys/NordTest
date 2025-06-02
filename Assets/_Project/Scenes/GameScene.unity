@@ -280,7 +280,7 @@ GameObject:
   - component: {fileID: 392613042}
   m_Layer: 0
   m_Name: ===== UI =====
-  m_TagString: Untagged
+  m_TagString: EditorOnly
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -294,7 +294,7 @@ Transform:
   m_GameObject: {fileID: 392613041}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.506216, y: -1.2500361, z: -10.058067}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2105,6 +2105,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1585321368}
   - component: {fileID: 1585321370}
+  - component: {fileID: 1585321371}
   - component: {fileID: 1585321369}
   m_Layer: 0
   m_Name: EnemySpawner
@@ -2153,14 +2154,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbf36de5e84e87348be8deb27b2d6b8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _enemyPool: {fileID: 1585321369}
+  _enemyFactory: {fileID: 1585321371}
   _spawnZone: {fileID: 1403007793}
   _tankLayerMask:
     serializedVersion: 2
     m_Bits: 72
-  _spawnCheckRadius: 2
+  _spawnCheckRadius: 4
   _enemyCount: 4
   _respawnDelay: 1
+--- !u!114 &1585321371
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1585321367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9e5d0f6f1af93743a99e64096ff71a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _enemyPool: {fileID: 1585321369}
 --- !u!1 &1650371334
 GameObject:
   m_ObjectHideFlags: 0
@@ -2341,10 +2355,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _player: {fileID: 1846935445}
   _spawnZone: {fileID: 1403007793}
-  _spawnCheckRadius: 2
   _tankLayer:
     serializedVersion: 2
     m_Bits: 64
+  _spawnCheckRadius: 2
 --- !u!1 &1730747893
 GameObject:
   m_ObjectHideFlags: 0
