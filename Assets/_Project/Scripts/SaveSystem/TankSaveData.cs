@@ -3,6 +3,11 @@ using UnityEngine;
 
 namespace Assets._Project.Scripts.SaveSystem
 {
+    public interface ITankSave
+    {
+        TankSaveData GetSaveData();
+    }
+
     [Serializable]
     public class TankSaveData : ISaveData
     {

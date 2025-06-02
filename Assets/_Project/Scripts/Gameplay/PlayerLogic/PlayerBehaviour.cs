@@ -3,12 +3,13 @@ using Assets._Project.Scripts.Gameplay.GameInput;
 using Assets._Project.Scripts.Gameplay.TanksLogic;
 using Assets._Project.Scripts.Gameplay.TanksLogic.Control;
 using Assets._Project.Scripts.Gameplay.TanksLogic.Shooting;
+using Assets._Project.Scripts.SaveSystem;
 using System;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Gameplay.PlayerLogic
 {
-    public class PlayerBehaviour : MonoBehaviour
+    public class PlayerBehaviour : MonoBehaviour, ITankSave
     {
         [SerializeField] private DefaultTankMovement _movement;
         [SerializeField] private TankGun _gun;
@@ -46,11 +47,16 @@ namespace Assets._Project.Scripts.Gameplay.PlayerLogic
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            if (collision.gameObject.TryGetComponent(out EnemyBehaviour bullet))
+            if (collision.gameObject.TryGetComponent(out DefaultEnemyBehaviour bullet))
             {
                 OnHit?.Invoke();
                 return;
             }
+        }
+
+        public TankSaveData GetSaveData()
+        {
+            return new TankSaveData(transform.position, transform.rotation);
         }
     }
 }
